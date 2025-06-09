@@ -1,0 +1,36 @@
+version: 0.2
+
+env:
+  variables:
+    AWS_DEFAULT_REGION: us-west-2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto8
+    commands:
+      - echo "Installing JDK..."
+      - yum update -y
+      - yum install -y java-1.8.0-openjdk-devel
+
+  build:
+    commands:
+      - echo "Creating target directory src/bin..."
+      - mkdir -p src/bin
+
+      - echo "Compiling src/Main.java → src/bin/Main.class"
+      - javac src/Main.java -d src/bin
+
+      - echo "Packaging Main.class into app.jar"
+      - cd src/bin
+      - jar cvf app.jar Main.class
+      - cd -     
+
+  post_build:
+    commands:
+      - echo "Build phase complete; artifacts are in src/bin/app.jar"
+
+artifacts:
+  base-directory: src/bin
+  files:
+    - app.jar
